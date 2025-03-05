@@ -1,17 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//bibliothek für Buttons
+using UnityEngine.UI;
 
 //Neuigkeiten im Code:
-// yield return null;  // Wartet den nächsten Frame ab
+// yield return null;  // Wartet auf den nächsten Frame ab
 //QUartanion Slerp -> berechnet eine sanfte Übergangsrotation) zwischen der aktuellen Rotation und der Zielrotation
 //Quaternion.Euler ->die eine Rotation im 3D-Raum darstellt basierend auf den angegebenen Eulerwinkeln (Winkel um die X-, Y- und Z-Achsen).
+//Dictionary -> Wörterbuch (ähnlich wie eine Liste, aber mit Schlüssel-Wert-Paaren)
+//Coroutine -> eine Methode die ihre aufgabe stoppen unddann fortführen kann (multitasking)
 
 public class SegmentRotation : MonoBehaviour
 {
     // Segmente in waagerecht und senkrecht (für die Zahlen 0 bis 9)
-    public Transform wunten, wmitte, woben;
-    public Transform srechts, srechtsu, slinks, slinksu;
+    public Transform d, g, a;
+    public Transform b, c, f, e;
+
+    public GameObject cube;
+    // public GameObject startButton = GameObject.FindWithTag("StartButton");
+  
+    
+    public void spinCube()
+    {   
+        cube.transform.Rotate(0, 180, 0);
+        // startButton.interactable = false;
+    }
 
     // Speichert welche Segmente für jede Zahl 0bis 9 aktiv sind -> Segmentanordnung für jede Zahl
     private Dictionary<int, bool[]> digitMap = new Dictionary<int, bool[]>()
@@ -37,10 +51,11 @@ public class SegmentRotation : MonoBehaviour
     // variable um zu verhindern, dass während der Rücksetzung eine neue Zahl gesetzt wird
     private bool isResetting = false;
 
-    void Start()
+    private void Start()
     {
+        cube.transform.Rotate(0, 180, 0);
         // Initialisieren der Segment-Referenzen
-        segments = new Transform[] { woben, wmitte, wunten, slinks, srechts, slinksu, srechtsu };
+        segments = new Transform[] { a, g, d, f, b, e, c };
 
         // Speichert die Ausgangsrotationen der Segmente
         defaultRotations = new Quaternion[segments.Length];
@@ -50,7 +65,7 @@ public class SegmentRotation : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
         // Überprüfen, ob eine Zahl von 0 bis 9 gedrückt wurde
         for (int i = 0; i <= 9; i++)
@@ -118,12 +133,12 @@ public class SegmentRotation : MonoBehaviour
     // Bestimmt die Zielrotation für jedes Segment (je nachdem, ob es senkrecht oder waagerecht ist)
     Quaternion GetTargetRotation(Transform segment)
     {
-        // Senkrechte Segmente (wie slinks, srechts) werden um die Y-Achse gedreht
-        if (segment == slinks || segment == slinksu || segment == srechts || segment == srechtsu)
+        // Senkrechte Segmente (wie f, b) werden um die Y-Achse gedreht
+        if (segment == f || segment == e || segment == b || segment == c)
             return Quaternion.Euler(segment.eulerAngles.x, segment.eulerAngles.y + 90, segment.eulerAngles.z); // Y-Achse
 
-        // Waagerechte Segmente (wie woben, wmitte, wunten) werden um die X-Achse gedreht
-        if (segment == woben || segment == wmitte || segment == wunten)
+        // Waagerechte Segmente (wie a, g, d) werden um die X-Achse gedreht
+        if (segment == a || segment == g || segment == d)
             return Quaternion.Euler(segment.eulerAngles.x + 90, segment.eulerAngles.y, segment.eulerAngles.z); // X-Achse
 
         return segment.rotation;  // Sollte kein Segment erkannt werden, bleibt die Rotation unverändert
