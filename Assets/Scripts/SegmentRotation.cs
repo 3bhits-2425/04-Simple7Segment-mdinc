@@ -1,15 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//bibliothek für Buttons
 using UnityEngine.UI;
-
-//Neuigkeiten im Code:
-// yield return null;  // Wartet auf den nächsten Frame ab
-//QUartanion Slerp -> berechnet eine sanfte Übergangsrotation) zwischen der aktuellen Rotation und der Zielrotation
-//Quaternion.Euler ->die eine Rotation im 3D-Raum darstellt basierend auf den angegebenen Eulerwinkeln (Winkel um die X-, Y- und Z-Achsen).
-//Dictionary -> Wörterbuch (ähnlich wie eine Liste, aber mit Schlüssel-Wert-Paaren)
-//Coroutine -> eine Methode die ihre aufgabe stoppen unddann fortführen kann (multitasking)
 
 public class SegmentRotation : MonoBehaviour
 {
@@ -18,13 +10,10 @@ public class SegmentRotation : MonoBehaviour
     public Transform b, c, f, e;
     public int alleZahlen = 9;
     public GameObject cube;
-    // public GameObject startButton = GameObject.FindWithTag("StartButton");
-  
-    
+
     public void spinCube()
     {   
         cube.transform.Rotate(0, 180, 0);
-        // startButton.interactable = false;
     }
 
     // Speichert welche Segmente für jede Zahl 0bis 9 aktiv sind -> Segmentanordnung für jede Zahl
@@ -42,19 +31,14 @@ public class SegmentRotation : MonoBehaviour
         { 9, new bool[] { true, true, true, true, true, false, true } }   // 9
     };
 
-    // Liste der Segmente (wird später benutzt, um sie alle gleichzeitig je nach zahl zu rotieren)
     private Transform[] segments;
 
-    // Speichert die Ausgangsrotation der Segmente (um sie später zurückzusetzen damit alle Rotationen klappen)
     private Quaternion[] defaultRotations;
-
-    // variable um zu verhindern, dass während der Rücksetzung eine neue Zahl gesetzt wird
     private bool isResetting = false;
 
     private void Start()
     {
         cube.transform.Rotate(0, 180, 0);
-        // Initialisieren der Segment-Referenzen
         segments = new Transform[] { a, g, d, f, b, e, c };
 
         // Speichert die Ausgangsrotationen der Segmente
@@ -67,14 +51,12 @@ public class SegmentRotation : MonoBehaviour
 
     private void Update()
     {
-        // Überprüfen, ob eine Zahl von 0 bis 9 gedrückt wurde
         for (int i = 0; i <= 9; i++)
         {
-            // Wenn eine Zahl gedrückt wird und nicht gerade zurückgesetzt wird
             if (Input.GetKeyDown(i.ToString()) && !isResetting)
             {
-                StopAllCoroutines();  // Stoppe alle laufenden rotierungen
-                StartCoroutine(ResetAndSetDigit(i));  // Starte den Reset-Prozess und setze dann die Zahl
+                StopAllCoroutines(); 
+                StartCoroutine(ResetAndSetDigit(i)); 
             }
         }
     }
@@ -83,22 +65,14 @@ public class SegmentRotation : MonoBehaviour
     IEnumerator ResetAndSetDigit(int number)
     {
         isResetting = true;
-
-        // Schritt 1: Setze alle Segmente zurück in ihre Ausgangsposition
         yield return StartCoroutine(ResetSegments());
-
-        // Schritt 2: Setze die neue Zahl
         SetDigit(number);
-
-        isResetting = false;  // Rücksetzung abgeschlossen
+        isResetting = false; 
     }
 
-    // Setzt alle Segmente auf ihre Ausgangsposition zurück
     IEnumerator ResetSegments()
     {
         List<Coroutine> runningCoroutines = new List<Coroutine>();
-
-        // Durchläuft alle Segmente und setzt sie zurück
         for (int i = 0; i < segments.Length; i++)
         {
             // Startet für jedes Segment eine Coroutine, die es zurückdreht
@@ -111,55 +85,40 @@ public class SegmentRotation : MonoBehaviour
             yield return runningCoroutine;
         }
     }
-
-    // Setzt die Segmente für die angegebene Zahl (z.B. 0, 1, 2, etc.)
     void SetDigit(int number)
     {
         if (digitMap.ContainsKey(number))
         {
-            bool[] activeSegments = digitMap[number];  // Hole die Segmentaktivierungen für diese Zahl
-
-            // Gehe durch alle Segmente und rotiere sie, je nach dem, ob sie aktiv sind oder nicht
+            bool[] activeSegments = digitMap[number];
             for (int i = 0; i < segments.Length; i++)
             {
-                // Bestimme die Zielrotation für jedes Segment
                 Quaternion targetRotation = activeSegments[i] ? GetTargetRotation(segments[i]) : defaultRotations[i];
-                // Starte eine Coroutine für die Drehung
                 StartCoroutine(RotateSegment(segments[i], targetRotation, 0.5f));
             }
         }
     }
-
-    // Bestimmt die Zielrotation für jedes Segment (je nachdem, ob es senkrecht oder waagerecht ist)
     Quaternion GetTargetRotation(Transform segment)
     {
-        // Senkrechte Segmente (wie f, b) werden um die Y-Achse gedreht
         if (segment == f || segment == e || segment == b || segment == c)
             return Quaternion.Euler(segment.eulerAngles.x, segment.eulerAngles.y + 90, segment.eulerAngles.z); // Y-Achse
 
-        // Waagerechte Segmente (wie a, g, d) werden um die X-Achse gedreht
         if (segment == a || segment == g || segment == d)
             return Quaternion.Euler(segment.eulerAngles.x + 90, segment.eulerAngles.y, segment.eulerAngles.z); // X-Achse
 
-        return segment.rotation;  // Sollte kein Segment erkannt werden, bleibt die Rotation unverändert
+        return segment.rotation; 
     }
 
-    // Führt die Rotation für ein Segment durch (mit einer sanften Übergangsbewegung)
     IEnumerator RotateSegment(Transform segment, Quaternion targetRotation, float duration)
     {
-        Quaternion startRotation = segment.rotation;  // Ausgangsrotation des Segments
+        Quaternion startRotation = segment.rotation; 
         float time = 0;
 
-        // Animation läuft über die angegebene Dauer
         while (time < duration)
         {
-            // Interpoliert die Rotation zwischen der aktuellen und der Zielrotation
             segment.rotation = Quaternion.Slerp(startRotation, targetRotation, time / duration);
             time += Time.deltaTime;  // Zeitfortschritt
             yield return null;  // Wartet den nächsten Frame ab
         }
-
-        // Stellt sicher, dass das Segment die genaue Zielrotation erreicht
         segment.rotation = targetRotation;
     }
-}
+} 
