@@ -33,4 +33,7 @@ Dieses Projekt simuliert eine mechanische 7-Segment-Anzeige, bei der die Segment
 ### **Steuerung:**
 
 - **Zahlen 0 bis 9** können über die **Zifferntasten** auf der Tastatur eingegeben werden, um die Zahl auf der Anzeige darzustellen.
+-**Meine Anordnung der Segmente**
+  
+![image](https://github.com/user-attachments/assets/5194f7ba-1047-47b1-979f-b4048220d725)
 
