@@ -16,7 +16,7 @@ public class SegmentRotation : MonoBehaviour
     // Segmente in waagerecht und senkrecht (für die Zahlen 0 bis 9)
     public Transform d, g, a;
     public Transform b, c, f, e;
-
+    public int alleZahlen = 9;
     public GameObject cube;
     // public GameObject startButton = GameObject.FindWithTag("StartButton");
   
