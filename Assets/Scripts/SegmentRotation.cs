@@ -6,8 +6,7 @@ using UnityEngine.UI;
 public class SegmentRotation : MonoBehaviour
 {
     // Segmente in waagerecht und senkrecht (für die Zahlen 0 bis 9)
-    public Transform d, g, a;
-    public Transform b, c, f, e;
+    public Transform d, g, a, b, c, f, e;
     public int alleZahlen = 9;
     public GameObject cube;
 
@@ -32,7 +31,6 @@ public class SegmentRotation : MonoBehaviour
     };
 
     private Transform[] segments;
-
     private Quaternion[] defaultRotations;
     private bool isResetting = false;
 
