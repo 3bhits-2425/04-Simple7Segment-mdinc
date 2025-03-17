@@ -51,7 +51,7 @@ public class SegmentRotation : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i <= 9; i++)
+        for (int i = 0; i <= alleZahlen; i++)
         {
             if (Input.GetKeyDown(i.ToString()) && !isResetting)
             {
